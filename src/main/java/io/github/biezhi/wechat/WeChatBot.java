@@ -264,6 +264,9 @@ public class WeChatBot {
                 while (true) {
                     if (hasMessage()) {
                         WeChatMessage weChatMessage = nextMessage();
+                        log.debug("收到微信消息 类型:{},fromUse:{},fromNickName:{},text:{},raw:{}", weChatMessage.getMsgType(),
+                                weChatMessage.getFromUserName(), weChatMessage.getFromNickName(),
+                                weChatMessage.getText(), weChatMessage.getRaw());
                         callBack(mapping.get(MsgType.ALL), weChatMessage);
                         callBack(mapping.get(weChatMessage.getMsgType()), weChatMessage);
                     } else {

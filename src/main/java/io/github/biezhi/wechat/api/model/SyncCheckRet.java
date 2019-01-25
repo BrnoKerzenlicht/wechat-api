@@ -15,6 +15,11 @@ import lombok.Data;
 public class SyncCheckRet {
 
     private RetCode retCode;
+    /**
+     * 0 正常
+     * 2 新的消息
+     * 7 进入/离开聊天界面
+     */
     private int     selector;
 
 }

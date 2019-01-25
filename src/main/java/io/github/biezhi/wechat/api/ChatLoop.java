@@ -46,9 +46,13 @@ public class ChatLoop implements Runnable {
                     // 更新最后一次正常检查时间
                     bot.updateLastCheck();
                     WebSyncResponse webSyncResponse = api.webSync();
+                    if (syncCheckRet.getSelector() != 0) {
+                        log.debug("新消息:{},{}", syncCheckRet, webSyncResponse.getAddMessageList());
+                    }
                     switch (syncCheckRet.getSelector()) {
                         case 2:
                             if (null == webSyncResponse) {
+                                log.info("webSyncResponse 为null");
                                 break;
                             }
                             bot.addMessages(api.handleMsg(webSyncResponse.getAddMessageList()));

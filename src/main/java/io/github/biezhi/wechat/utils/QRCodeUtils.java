@@ -1,18 +1,22 @@
 package io.github.biezhi.wechat.utils;
 
-import com.google.zxing.*;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.MultiFormatReader;
+import com.google.zxing.Result;
+import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
-import lombok.extern.slf4j.Slf4j;
-
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.EnumMap;
 import java.util.Map;
+import javax.imageio.ImageIO;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 二维码工具类
@@ -51,8 +55,32 @@ public class QRCodeUtils {
         String       qrContent    = QRCodeUtils.readQRCode(qrCode, hintMap);
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         BitMatrix    bitMatrix;
-        bitMatrix = qrCodeWriter.encode(qrContent, BarcodeFormat.QR_CODE, 10, 10, hintMap);
-        System.out.println(toAscii(bitMatrix));
+        if (qrContent == null) {
+            log.warn("读取二维码内容为空");
+        }
+        else {
+            bitMatrix = qrCodeWriter.encode(qrContent, BarcodeFormat.QR_CODE, 10, 10, hintMap);
+            System.out.println(toAscii(bitMatrix));
+        }
+    }
+
+    /**
+     * 是否是二维码
+     */
+    public static boolean isQRCode(File filePath){
+        try {
+            Map<EncodeHintType, Object> hintMap = new EnumMap<>(EncodeHintType.class);
+            hintMap.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+            // Now with zxing version 3.2.1 you could change border size (white border size to just 1)
+            // default = 4
+            hintMap.put(EncodeHintType.MARGIN, 1);
+            hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
+            String qrContent = QRCodeUtils.readQRCode(filePath, hintMap);
+            return qrContent != null;
+        }
+        catch (Exception e) {
+            return false;
+        }
     }
 
     /**
@@ -93,7 +121,6 @@ public class QRCodeUtils {
             Result qrCodeResult = new MultiFormatReader().decode(binaryBitmap, hintMap);
             return qrCodeResult.getText();
         } catch (Exception e) {
-            e.printStackTrace();
             return null;
         }
     }
